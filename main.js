@@ -1,8 +1,7 @@
 var map;
-var center;
 
 function initMap() {
-	center =  {lat: 40.7413549, lng: -73.9980244};
+	var center =  {lat: 40.7413549, lng: -73.9980244};
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: center,
 		zoom: 13,
@@ -146,6 +145,11 @@ function createMarkers(results, markers, type) {
 		markers.push(marker);
 		// Create an onclick event to open the large infowindow at each marker.
 		marker.addListener('click', function() {
+			 if (this.getAnimation() !== null) {
+         	 	this.setAnimation(null);
+	        } else {
+	        	this.setAnimation(google.maps.Animation.BOUNCE);
+	        }
 			populateInfoWindow(this, largeInfowindow);
 		});
 		// Two event listeners - one for mouseover, one for mouseout,
