@@ -2,19 +2,26 @@ html, body {
   height: 100%;
 }
 
+#zoom-to-area {
+  width: 100%;
+}
 
 .max-height {
   height: 100%;
 }
 
-.padding {
+.default-padding-top {
   padding-top: 10%;
-  padding-left: 10%;
 }
 
-div[class^="row"] {
-   
+.default-padding-left {
+    padding-left: 10%;
 }
+
+.no-padding-left {
+    padding-left: 0px;
+}
+
 
 /*html,
       body {

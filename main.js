@@ -4,10 +4,10 @@ $(document).ready(function () {
 
 // Here's my data model
 var ViewModel = function(first, last) {
-	// this.list = ko.observableArray([
-	// 	new SeatReservation("Steve", self.availableMeals[0]),
-	// 	new SeatReservation("Bert", self.availableMeals[1])
-	// 	]);
+	this.list = ko.observableArray([
+		{title: "lala 1"},
+		{title: "lala 2"}
+		]);
 	this.firstName = ko.observable(first);
 	this.lastName = ko.observable(last);
 };
@@ -28,50 +28,7 @@ map = new google.maps.Map(document.getElementById('map'), {
 	mapTypeControl: false
 });
 
-// populateLocations(center);
-// These are the real estate listings that will be shown to the user.
-// Normally we'd have these in a database instead.
-populateLocations(center, function(results, status) {
-	console.log("entrou aqui 3")
-	console.log(results)
-	if (status != google.maps.places.PlacesServiceStatus.OK) {
-		return;
-	}
-	var largeInfowindow = new google.maps.InfoWindow();
-// Style the markers a bit. This will be our listing marker icon.
-var defaultIcon = makeMarkerIcon('img/restaurant.png');
-// Create a "highlighted location" marker color for when the user
-// mouses over the marker.
-var highlightedIcon = makeMarkerIcon('img/restaurant2.png');
-// The following group uses the location array to create an array of markers on initialize.
-for (var i = 0; i < results.length; i++) {
-// Get the position from the location array.
-var position = results[i].geometry.location;
-var title = results[i].name;
-// Create a marker per location, and put into markers array.
-var marker = new google.maps.Marker({
-	position: position,
-	title: title,
-	animation: google.maps.Animation.DROP,
-	icon: defaultIcon,
-	id: i
-});
-// Push the marker to our array of markers.
-markers.push(marker);
-// Create an onclick event to open the large infowindow at each marker.
-marker.addListener('click', function() {
-	populateInfoWindow(this, largeInfowindow);
-});
-// Two event listeners - one for mouseover, one for mouseout,
-// to change the colors back and forth.
-marker.addListener('mouseover', function() {
-	this.setIcon(highlightedIcon);
-});
-marker.addListener('mouseout', function() {
-	this.setIcon(defaultIcon);
-});
-}
-});
+createMarkers(center);
 
 document.getElementById('show-listings').addEventListener('click', showListings);
 // document.getElementById('hide-listings').addEventListener('click', hideListings);
@@ -81,7 +38,7 @@ document.getElementById('zoom-to-area').addEventListener('click', function() {
 
 }
 
-function populateLocations(center, callback) {
+function createMarkers(center) {
 	console.log("entrou aqui 1")
 	var request = {
 		location: center,
@@ -91,8 +48,43 @@ function populateLocations(center, callback) {
 
 	var service = new google.maps.places.PlacesService(map);
 	service.nearbySearch(request, function(results, status) {
-		console.log("entrou aqui 2")
-		callback(results, status);
+		if (status == google.maps.places.PlacesServiceStatus.OK) {
+			var largeInfowindow = new google.maps.InfoWindow();
+			// Style the markers a bit. This will be our listing marker icon.
+			var defaultIcon = makeMarkerIcon('img/restaurant.png');
+			// Create a "highlighted location" marker color for when the user
+			// mouses over the marker.
+			var highlightedIcon = makeMarkerIcon('img/restaurant2.png');
+
+			// The following group uses the location array to create an array of markers on initialize.
+			for (var i = 0; i < results.length; i++) {
+				// Get the position from the location array.
+				var position = results[i].geometry.location;
+				var title = results[i].name;
+				// Create a marker per location, and put into markers array.
+				var marker = new google.maps.Marker({
+					position: position,
+					title: title,
+					animation: google.maps.Animation.DROP,
+					icon: defaultIcon,
+					id: i
+				});
+				// Push the marker to our array of markers.
+				markers.push(marker);
+				// Create an onclick event to open the large infowindow at each marker.
+				marker.addListener('click', function() {
+					populateInfoWindow(this, largeInfowindow);
+				});
+				// Two event listeners - one for mouseover, one for mouseout,
+				// to change the colors back and forth.
+				marker.addListener('mouseover', function() {
+					this.setIcon(highlightedIcon);
+				});
+				marker.addListener('mouseout', function() {
+					this.setIcon(defaultIcon);
+				});
+			}
+		}
 	});
 }
 
