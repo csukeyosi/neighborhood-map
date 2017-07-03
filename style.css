@@ -20,10 +20,10 @@ html, body {
 }
 
 .default-padding-left {
-    padding-left: 10%;
+  padding-left: 10%;
 }
 
-.no-padding {
-    /*padding-right: 0px;*/
-/*    padding-left: 0px;*/
+#pano {
+  width: 200px;
+  height: 200px;
 }

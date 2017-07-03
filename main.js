@@ -1,31 +1,48 @@
 var map;
+var largeInfowindow;
 
+/**
+* Initialize the map, infowindow and the viewmodel.
+*/
 function initMap() {
-	var center =  {lat: 40.7413549, lng: -73.9980244};
+	// create the map
+	var center =  {lat: 37.7749295, lng: -122.4194155};
 	map = new google.maps.Map(document.getElementById('map'), {
 		center: center,
 		zoom: 13,
 		mapTypeControl: false
 	});
 
+	// create the infoWindow
+	largeInfowindow = new google.maps.InfoWindow();
+	google.maps.event.addListener(largeInfowindow,'closeclick',function(){
+   		if (largeInfowindow.marker) {
+			largeInfowindow.marker.setAnimation(null);
+		}
+	});
+
+	// create the ViewModel and get the markers
 	var vm = new ViewModel();
 	getMarkers(center, 'restaurant', function(result) {
 		vm.addMarkers(result);
 	});
-
 	getMarkers(center, 'gym', function(result) {
 		vm.addMarkers(result);
 	});
 
 	ko.applyBindings(vm);
-}
+};
 
-
+/**
+* Control the list and the buttons.
+*/
 var ViewModel = function() {
 	var self = this;
 
+	// markers shown in the list
 	self.shown = ko.observableArray([]);
 
+	// markers hidden from the list
 	self.hidden = ko.observableArray([]);
 
 	self.showHideRestaurants = function() {
@@ -43,7 +60,6 @@ var ViewModel = function() {
 	}
 
 	self.openInfoWindow = function(item) {
-		var largeInfowindow = new google.maps.InfoWindow();
 		populateInfoWindow(item, largeInfowindow);
 	}
 
@@ -69,7 +85,9 @@ var ViewModel = function() {
     });
 };
 
-
+/**
+* 
+*/
 function showHideMarkers(shown, hidden, type) {
 	var removed = shown.remove(function(item) {
 		return item.type === type;
@@ -100,7 +118,8 @@ function showHideMarkers(shown, hidden, type) {
 
 
 
-
+/**
+*/
 function getMarkers(center, type, callback) {
 	var request = {
 		location: center,
@@ -122,8 +141,6 @@ function getMarkers(center, type, callback) {
 
 function createMarkers(results, markers, type) {
 	var bounds = new google.maps.LatLngBounds();
-	var largeInfowindow = new google.maps.InfoWindow();
-
 	var defaultIcon = makeMarkerIcon(type === 'restaurant' ? 'img/restaurant.png' : 'img/gym.png');
 	var highlightedIcon = makeMarkerIcon(type === 'restaurant' ? 'img/restaurant2.png' : 'img/gym2.png');
 
@@ -145,11 +162,6 @@ function createMarkers(results, markers, type) {
 		markers.push(marker);
 		// Create an onclick event to open the large infowindow at each marker.
 		marker.addListener('click', function() {
-			 if (this.getAnimation() !== null) {
-         	 	this.setAnimation(null);
-	        } else {
-	        	this.setAnimation(google.maps.Animation.BOUNCE);
-	        }
 			populateInfoWindow(this, largeInfowindow);
 		});
 		// Two event listeners - one for mouseover, one for mouseout,
@@ -168,12 +180,19 @@ function createMarkers(results, markers, type) {
 }
 
 
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
+/**
+* This function populates the infowindow when the marker is clicked. We'll only allow
+* one infowindow which will open at the marker that is clicked, and populate based
+* on that markers position.
+*/
 function populateInfoWindow(marker, infowindow) {
+	if (infowindow.marker) {
+		infowindow.marker.setAnimation(null);
+	}
+
 	// Check to make sure the infowindow is not already opened on this marker.
 	if (infowindow.marker != marker) {
+       	marker.setAnimation(google.maps.Animation.BOUNCE);
 		// Clear the infowindow content to give the streetview time to load.
 		infowindow.setContent('');
 		infowindow.marker = marker;
@@ -215,12 +234,16 @@ function populateInfoWindow(marker, infowindow) {
 		streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 		// Open the infowindow on the correct marker.
 		infowindow.open(map, marker);
+	} else {
+		infowindow.close();
 	}
-}
+};
 
 
-// The icon will be 21 px wide by 34 high, have an origin
-// of 0, 0 and be anchored at 10, 34).
+/**
+* The icon will be 44 px wide by 44 high, have an origin
+* of 0, 0 and be anchored at 10, 34).
+*/
 function makeMarkerIcon(path) {
 	var markerImage = new google.maps.MarkerImage(
 		path,
@@ -228,5 +251,6 @@ function makeMarkerIcon(path) {
 		new google.maps.Point(0, 0),
 		new google.maps.Point(10, 34),
 		new google.maps.Size(44,44));
+
 	return markerImage;
 }
