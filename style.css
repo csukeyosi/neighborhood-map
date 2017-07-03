@@ -7,7 +7,7 @@ html, body {
 }
 
 #row-table {
-  height: 200px;
+  height: 500px;
   overflow: auto;
 }
 
@@ -23,6 +23,7 @@ html, body {
     padding-left: 10%;
 }
 
-.no-padding-left {
-    padding-left: 0px;
+.no-padding {
+    /*padding-right: 0px;*/
+/*    padding-left: 0px;*/
 }

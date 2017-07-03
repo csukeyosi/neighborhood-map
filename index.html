@@ -18,33 +18,21 @@
     <div class="max-height row">
         <div class="col-md-2">
 
-            <div class="row form-group default-padding-top default-padding-left">
-                <div  class="col-md-12">
-                    <input class="form-control" id="zoom-to-area-text" type="text" placeholder="Enter your favorite area!">
-                </div>
-            </div>
-
-            <div class="row form-group default-padding-left">
-                <div class="col-md-12 text-right">
-                    <button id="zoom-to-area" type="button" class="btn btn-success">Zoom</button>
+            <div class="row default-padding-top default-padding-left">
+                <div  class="col-md-12 text-center">
+                    <button data-bind="click: showHideRestaurants" type="button" class="btn btn-default"><img src="img/restaurant.png" height="100px" width="100px"></img></button>
                 </div>
             </div>
 
             <div class="row default-padding-top default-padding-left">
                 <div  class="col-md-12 text-center">
-                    <button id="show-listings" type="button" class="btn btn-default"><img src="img/restaurant.png" height="100px" width="100px"></img></button>
-                </div>
-            </div>
-
-            <div class="row default-padding-top default-padding-left">
-                <div  class="col-md-12 text-center">
-                    <button id="show-listings" type="button" class="btn btn-default"><img src="img/gym.png" height="100px" width="100px"></img></button>
+                    <button data-bind="click: showHideGyms" type="button" class="btn btn-default"><img src="img/gym.png" height="100px" width="100px"></img></button>
                 </div>
             </div>
 
             <div class="row default-padding-top default-padding-left">
                 <div  class="col-md-12">
-                    <input class="form-control" type="text" placeholder="Filter markers...">
+                    <input data-bind="textInput: currentFilter" class="form-control" type="text" placeholder="Filter markers...">
                 </div>
             </div>
 
@@ -56,9 +44,9 @@
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody data-bind="foreach: list">
+                        <tbody data-bind="foreach: filteredMarkers">
                             <tr>
-                                <td data-bind="text: title"></td>
+                                <td data-bind="text: title, visible: isVisible, click: $parent.openInfoWindow"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -67,7 +55,7 @@
     </div>
 
 
-    <div class="max-height col-md-10">
+    <div class="max-height col-md-10 no-padding">
         <div id="map" class="max-height"></div>
     </div>
 
