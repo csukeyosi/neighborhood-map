@@ -1,44 +1,33 @@
-$(document).ready(function () {
-// rest of your code here
-
-
-// Here's my data model
-var ViewModel = function(first, last) {
-	this.list = ko.observableArray([
-		{title: "lala 1"},
-		{title: "lala 2"}
-		]);
-	this.firstName = ko.observable(first);
-	this.lastName = ko.observable(last);
-};
-
-ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
-});
-
 var map;
 // Create a new blank array for all the listing markers.
 var markers = [];
-function initMap() {
 
+var ViewModel = function(markers) {
+			this.list = ko.observableArray(markers);
+};
+
+function initMap() {
 	var center = {lat: 40.7413549, lng: -73.9980244};
-// Constructor creates a new map - only center and zoom are required.
-map = new google.maps.Map(document.getElementById('map'), {
+	// Constructor creates a new map - only center and zoom are required.
+	map = new google.maps.Map(document.getElementById('map'), {
 	center: center,
 	zoom: 13,
 	mapTypeControl: false
-});
+	});
 
-createMarkers(center);
+	createMarkers(center, function(markers) {
+		ko.applyBindings(new ViewModel(markers));
+	});
 
-document.getElementById('show-listings').addEventListener('click', showListings);
-// document.getElementById('hide-listings').addEventListener('click', hideListings);
-document.getElementById('zoom-to-area').addEventListener('click', function() {
-	zoomToArea();
-});
+	document.getElementById('show-listings').addEventListener('click', showListings);
+	// document.getElementById('hide-listings').addEventListener('click', hideListings);
+	document.getElementById('zoom-to-area').addEventListener('click', function() {
+		zoomToArea();
+	});
 
 }
 
-function createMarkers(center) {
+function createMarkers(center, callback) {
 	console.log("entrou aqui 1")
 	var request = {
 		location: center,
@@ -48,7 +37,9 @@ function createMarkers(center) {
 
 	var service = new google.maps.places.PlacesService(map);
 	service.nearbySearch(request, function(results, status) {
+		var markers = [];
 		if (status == google.maps.places.PlacesServiceStatus.OK) {
+			var bounds = new google.maps.LatLngBounds();
 			var largeInfowindow = new google.maps.InfoWindow();
 			// Style the markers a bit. This will be our listing marker icon.
 			var defaultIcon = makeMarkerIcon('img/restaurant.png');
@@ -83,8 +74,13 @@ function createMarkers(center) {
 				marker.addListener('mouseout', function() {
 					this.setIcon(defaultIcon);
 				});
+
+				marker.setMap(map);
+				bounds.extend(marker.position);
 			}
+			map.fitBounds(bounds);
 		}
+		callback(markers)
 	});
 }
 
