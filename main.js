@@ -56,9 +56,6 @@ var ViewModel = function() {
 
 	self.addMarkers = function(newMarkers) {
 		for (var i=0; i < newMarkers.length; i++) {
-			// console.log(newMarkers[i].title)
-			// console.log(newMarkers[i].position.lat())
-			// console.log(newMarkers[i].position.lng())
 			self.shown.push(newMarkers[i]);
 		}
 	}
@@ -97,6 +94,8 @@ var ViewModel = function() {
 * @param type
 */
 function showHideMarkers(shown, hidden, type) {
+	infowindow.close();
+
 	var removed = shown.remove(function(item) {
 		return item.type === type;
 	});
@@ -208,10 +207,7 @@ function populateInfoWindow(marker) {
 		var params = 'term=' + marker.title
 			+ '&latitude=' + marker.position.lat()
 			+ '&longitude=' + marker.position.lng();
-		console.log("/yelp_search?"+ params);
 		$.get('/yelp_search?' + params, function(data, status) {
-			console.log(data)
-			console.log(status)
 			var content;
 			if (status === 'success' && data.businesses.length > 0) {
 				var business = data.businesses[0];
