@@ -32,7 +32,7 @@ function initMap() {
 	});
 
 	ko.applyBindings(vm);
-};
+}
 
 /**
 * @description Control the list and the buttons.
@@ -48,21 +48,21 @@ var ViewModel = function() {
 
 	self.showHideRestaurants = function() {
 		showHideMarkers(self.shown, self.hidden, 'restaurant');
-	}
+	};
 
 	self.showHideGyms = function() {
 		showHideMarkers(self.shown, self.hidden, 'gym');
-	}
+	};
 
 	self.addMarkers = function(newMarkers) {
 		for (var i=0; i < newMarkers.length; i++) {
 			self.shown.push(newMarkers[i]);
 		}
-	}
+	};
 
 	self.openInfoWindow = function(item) {
 		populateInfoWindow(item);
-	}
+	};
 
  	self.currentFilter = ko.observable();
 
@@ -101,9 +101,9 @@ function showHideMarkers(shown, hidden, type) {
 
 	var isHide = removed.length;
 
-	for (var i = 0; i < removed.length; i++) {
-		removed[i].setMap(null);
-		hidden.push(removed[i]);
+	for (var j = 0; j < removed.length; j++) {
+		removed[j].setMap(null);
+		hidden.push(removed[j]);
 	}
 
 	if (!isHide) {
@@ -120,7 +120,7 @@ function showHideMarkers(shown, hidden, type) {
 
 		map.fitBounds(bounds);
 	}
-};
+}
 
 /**
 * @description Retrieve the places and create the respective markers.
@@ -142,9 +142,9 @@ function getMarkers(center, type, callback) {
 			createMarkers(results, markers, type);
 		}
 
-		callback(markers)
+		callback(markers);
 	});
-};
+}
 
 /**
 * @description Create the markers.
@@ -173,24 +173,49 @@ function createMarkers(results, markers, type) {
 		});
 		// Push the marker to our array of markers.
 		markers.push(marker);
-		// Create an onclick event to open the large infowindow at each marker.
-		marker.addListener('click', function() {
-			populateInfoWindow(this);
-		});
-		// Two event listeners - one for mouseover, one for mouseout,
-		// to change the colors back and forth.
-		marker.addListener('mouseover', function() {
-			this.setIcon(highlightedIcon);
-		});
-		marker.addListener('mouseout', function() {
-			this.setIcon(defaultIcon);
-		});
+
+		// add listeners
+		addOnClickListener(marker);
+		addOnMouseOverListener(marker, highlightedIcon);
+		addOnMouseOutListener(marker, defaultIcon);
 
 		marker.setMap(map);
 		bounds.extend(marker.position);
 	}
 	map.fitBounds(bounds);
-};
+}
+
+/**
+* @description Add Marker's onclick event listener.
+* @param {google.maps.Marker} marker
+*/
+function addOnClickListener(marker) {
+	marker.addListener('click', function() {
+		populateInfoWindow(this);
+	});
+}
+
+/**
+* @description Add Marker's onmouseover event listener.
+* @param {google.maps.Marker} marker
+* @param {google.maps.MarkerImage} highlightedIcon
+*/
+function addOnMouseOverListener(marker, highlightedIcon) {
+	marker.addListener('mouseover', function() {
+			this.setIcon(highlightedIcon);
+	});
+}
+
+/**
+* @description Add Marker's onmouseout event listener.
+* @param {google.maps.Marker} marker
+* @param {google.maps.MarkerImage} defaultIcon
+*/
+function addOnMouseOutListener(marker, defaultIcon) {
+	marker.addListener('mouseout', function() {
+			this.setIcon(defaultIcon);
+	});
+}
 
 /**
 * @description This function populates the infowindow when the marker is clicked. We'll only allow
@@ -244,7 +269,7 @@ function populateInfoWindow(marker) {
 	} else {
 		infowindow.close();
 	}
-};
+}
 
 /**
 * @description Move the map towards the marker.
@@ -261,12 +286,13 @@ function focusOnMarker(marker) {
     }
 
 	map.fitBounds(bounds);
-};
+}
 
 /**
 * @description The icon will be 44 px wide by 44 high, have an origin
 * of 0, 0 and be anchored at 10, 34).
 * @param {string} path - path to the file.
+* @return {google.maps.MarkerImage}
 */
 function makeMarkerIcon(path) {
 	var markerImage = new google.maps.MarkerImage(
@@ -277,4 +303,4 @@ function makeMarkerIcon(path) {
 		new google.maps.Size(44,44));
 
 	return markerImage;
-};
+}
