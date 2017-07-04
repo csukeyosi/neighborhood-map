@@ -27,7 +27,7 @@ app.get('/yelp_search', function(req, res){
 });
 
 /**
-* Replace the accented chars.
+* @description Replace the accented chars.
 * @params {string} str
 */
 function removeAccents(str) {

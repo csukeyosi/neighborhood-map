@@ -2,7 +2,7 @@ var map;
 var infowindow;
 
 /**
-* Initialize the map, infowindow and the viewmodel.
+* @description Initialize the map, infowindow and the viewmodel.
 */
 function initMap() {
 	// create the map
@@ -35,7 +35,7 @@ function initMap() {
 };
 
 /**
-* Control the list and the buttons.
+* @description Control the list and the buttons.
 */
 var ViewModel = function() {
 	var self = this;
@@ -87,11 +87,10 @@ var ViewModel = function() {
 };
 
 /**
-* Show/Hide the maskers.
-
-* @param shown
-* @param hidden
-* @param type
+* @description Show/Hide the maskers.
+* @param shown - markers shown.
+* @param hidden - markers hidedn.
+* @param type - restaurant or gym.
 */
 function showHideMarkers(shown, hidden, type) {
 	infowindow.close();
@@ -124,6 +123,10 @@ function showHideMarkers(shown, hidden, type) {
 };
 
 /**
+* @description Retrieve the places and create the respective markers.
+* @param {object} center - latitude and longitude.
+* @param {string} type - restaurant or gym.
+* @param {function} callback - used to rertun the created markers.
 */
 function getMarkers(center, type, callback) {
 	var request = {
@@ -144,7 +147,10 @@ function getMarkers(center, type, callback) {
 };
 
 /**
-*
+* @description Create the markers.
+* @param {array} results - places retrieved from google.maps.places.PlacesService.
+* @param {array} markers - array where the markers will be added.
+* @param {string} type - restaurant or gym.
 */
 function createMarkers(results, markers, type) {
 	var bounds = new google.maps.LatLngBounds();
@@ -187,7 +193,7 @@ function createMarkers(results, markers, type) {
 };
 
 /**
-* This function populates the infowindow when the marker is clicked. We'll only allow
+* @description This function populates the infowindow when the marker is clicked. We'll only allow
 * one infowindow which will open at the marker that is clicked, and populate based
 * on that markers position.
 * @param {google.maps.Marker} marker - the clicked marker.
@@ -241,7 +247,7 @@ function populateInfoWindow(marker) {
 };
 
 /**
-* Move the map towards the marker.
+* @description Move the map towards the marker.
 * @param {google.maps.Marker} marker - marker that will be focused.
 */
 function focusOnMarker(marker) {
@@ -258,7 +264,7 @@ function focusOnMarker(marker) {
 };
 
 /**
-* The icon will be 44 px wide by 44 high, have an origin
+* @description The icon will be 44 px wide by 44 high, have an origin
 * of 0, 0 and be anchored at 10, 34).
 * @param {string} path - path to the file.
 */
