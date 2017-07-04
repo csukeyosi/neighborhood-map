@@ -56,6 +56,9 @@ var ViewModel = function() {
 
 	self.addMarkers = function(newMarkers) {
 		for (var i=0; i < newMarkers.length; i++) {
+			// console.log(newMarkers[i].title)
+			// console.log(newMarkers[i].position.lat())
+			// console.log(newMarkers[i].position.lng())
 			self.shown.push(newMarkers[i]);
 		}
 	}
@@ -146,8 +149,8 @@ function getMarkers(center, type, callback) {
 */
 function createMarkers(results, markers, type) {
 	var bounds = new google.maps.LatLngBounds();
-	var defaultIcon = makeMarkerIcon(type === 'restaurant' ? 'img/restaurant.png' : 'img/gym.png');
-	var highlightedIcon = makeMarkerIcon(type === 'restaurant' ? 'img/restaurant2.png' : 'img/gym2.png');
+	var defaultIcon = makeMarkerIcon(type === 'restaurant' ? 'static/public/img/restaurant.png' : 'static/public/img/gym.png');
+	var highlightedIcon = makeMarkerIcon(type === 'restaurant' ? 'static/public/img/restaurant2.png' : 'static/public/img/gym2.png');
 
 	for (var i = 0; i < results.length; i++) {
 		// Get the position from the location array.
