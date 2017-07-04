@@ -235,14 +235,14 @@ function populateInfoWindow(marker) {
 		infowindow.setContent('');
 		infowindow.marker = marker;
 
-		var params = 'term=' + marker.title
+		var params = ('term=' + marker.title
 			+ '&latitude=' + marker.position.lat()
-			+ '&longitude=' + marker.position.lng();
+			+ '&longitude=' + marker.position.lng());
 		$.get('/yelp_search?' + params, function(data, status) {
 			var content;
 			if (status === 'success' && data.businesses.length > 0) {
 				var business = data.businesses[0];
-				content = '<div class="bold">' + marker.title + '</div>'
+				content = ('<div class="bold">' + marker.title + '</div>'
 				+ '<hr>'
 
 				+ '<div>'
@@ -253,11 +253,11 @@ function populateInfoWindow(marker) {
 
 				+ '<div id="pano">'
 				+ '<a href=' + business.url + '><img id="" class="img-infowindow text-center" src='+ business.image_url +'></img></a>'
-				+ '</div>';
+				+ '</div>');
 			} else {
-				content = '<div class="bold">' + marker.title + '</div>'
+				content = ('<div class="bold">' + marker.title + '</div>'
 					+ '<hr>'
-					+ '<div>No Additional Information Found</div>';
+					+ '<div>No Additional Information Found</div>');
 			}
 			infowindow.setContent(content);
 		});
