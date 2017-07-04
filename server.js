@@ -18,8 +18,9 @@ app.get('/', function(req, res){
 });
 
 app.get('/yelp_search', function(req, res){
-	var params = "term=" + removeAccents(req.query.term) + "&latitude=" + req.query.latitude
-		+ "&longitude=" + req.query.longitude + "&limit=1";
+	var params = "term=" + removeAccents(req.query.term) +
+		"&latitude=" + req.query.latitude +
+		"&longitude=" + req.query.longitude + "&limit=1";
 	yelp.search(params)
     	.then(function(result){
     		res.json(result);
