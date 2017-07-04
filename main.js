@@ -35,6 +35,13 @@ function initMap() {
 }
 
 /**
+* @description Create a feedback alert when the google maps api load goes wrong.
+*/
+function handleError() {
+	alert("Sorry! Something went wrong. Could not retrieve the map.");
+}
+
+/**
 * @description Control the list and the buttons.
 */
 var ViewModel = function() {
