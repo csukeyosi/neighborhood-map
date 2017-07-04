@@ -43,4 +43,4 @@ function removeAccents(str) {
     	}
   	}
   	return str.join('');
-};
+}
