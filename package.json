@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/csukeyosi/neighborhood-map#readme",
   "dependencies": {
+    "express": "^4.15.3",
     "node-yelp-fusion": "^1.0.4"
   }
 }
