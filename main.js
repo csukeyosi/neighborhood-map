@@ -140,6 +140,8 @@ function getMarkers(center, type, callback) {
 		var markers = [];
 		if (status == google.maps.places.PlacesServiceStatus.OK) {
 			createMarkers(results, markers, type);
+		} else {
+			alert("Could not retrieve the " + type + "s. (Status error: " + status + ")");
 		}
 
 		callback(markers);
@@ -202,7 +204,7 @@ function addOnClickListener(marker) {
 */
 function addOnMouseOverListener(marker, highlightedIcon) {
 	marker.addListener('mouseover', function() {
-			this.setIcon(highlightedIcon);
+		this.setIcon(highlightedIcon);
 	});
 }
 
@@ -213,7 +215,7 @@ function addOnMouseOverListener(marker, highlightedIcon) {
 */
 function addOnMouseOutListener(marker, defaultIcon) {
 	marker.addListener('mouseout', function() {
-			this.setIcon(defaultIcon);
+		this.setIcon(defaultIcon);
 	});
 }
 
@@ -238,8 +240,8 @@ function populateInfoWindow(marker) {
 		var params = ('term=' + marker.title +
 			'&latitude=' + marker.position.lat() +
 			'&longitude=' + marker.position.lng());
+		var content;
 		$.get('/yelp_search?' + params, function(data, status) {
-			var content;
 			if (status === 'success' && data.businesses.length > 0) {
 				var business = data.businesses[0];
 				content = '<div class="bold">' + marker.title + '</div>' +
@@ -259,8 +261,13 @@ function populateInfoWindow(marker) {
 					'<hr>' +
 					'<div>No Additional Information Found</div>';
 			}
-			infowindow.setContent(content);
-		});
+		}).fail(function() {
+    		content = '<div class="bold">' + marker.title + '</div>' +
+					'<hr>' +
+					'<div>Error: could not retrieve additional information.</div>';
+    	}).always(function() {
+    		infowindow.setContent(content);
+  		});
 
 		// Open the infowindow on the correct marker.
 		infowindow.open(map, marker);
