@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/csukeyosi/neighborhood-map/issues"
   },
-  "homepage": "https://github.com/csukeyosi/neighborhood-map#readme"
+  "homepage": "https://github.com/csukeyosi/neighborhood-map#readme",
+  "dependencies": {
+    "node-yelp-fusion": "^1.0.4"
+  }
 }

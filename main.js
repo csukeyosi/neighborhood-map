@@ -205,28 +205,34 @@ function populateInfoWindow(marker) {
 		infowindow.setContent('');
 		infowindow.marker = marker;
 
-		// Use streetview service to get the closest streetview image within
-		// 50 meters of the markers position
-		var streetViewService = new google.maps.StreetViewService();
-		streetViewService.getPanoramaByLocation(marker.position, 50, function(data, status) {
-			if (status == google.maps.StreetViewStatus.OK) {
-				var nearStreetViewLocation = data.location.latLng;
-				var heading = google.maps.geometry.spherical.computeHeading(
-					nearStreetViewLocation, marker.position);
-				infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
-				var panoramaOptions = {
-					position: nearStreetViewLocation,
-					pov: {
-						heading: heading,
-						pitch: 30
-					}
-				};
-				var panorama = new google.maps.StreetViewPanorama(
-					document.getElementById('pano'), panoramaOptions);
+		var params = 'term=' + marker.title
+			+ '&latitude=' + marker.position.lat()
+			+ '&longitude=' + marker.position.lng();
+		console.log("/yelp_search?"+ params);
+		$.get('/yelp_search?' + params, function(data, status) {
+			console.log(data)
+			console.log(status)
+			var content;
+			if (status === 'success' && data.businesses.length > 0) {
+				var business = data.businesses[0];
+				content = '<div class="bold">' + marker.title + '</div>'
+				+ '<hr>'
+
+				+ '<div>'
+				+ '<p>Phone: ' + business.display_phone +'<br>' + 'Rating: '+ business.rating + '</p>'
+				+ '</div>'
+
+				+ '<p>For more info:</p>'
+
+				+ '<div id="pano">'
+				+ '<a href=' + business.url + '><img id="" class="img-infowindow text-center" src='+ business.image_url +'></img></a>'
+				+ '</div>';
 			} else {
-				infowindow.setContent('<div>' + marker.title + '</div>' +
-					'<div>No Street View Found</div>');
+				content = '<div class="bold">' + marker.title + '</div>'
+					+ '<hr>'
+					+ '<div>No Additional Information Found</div>';
 			}
+			infowindow.setContent(content);
 		});
 
 		// Open the infowindow on the correct marker.
