@@ -1,5 +1,5 @@
 var map;
-var largeInfowindow;
+var infowindow;
 
 /**
 * Initialize the map, infowindow and the viewmodel.
@@ -14,11 +14,12 @@ function initMap() {
 	});
 
 	// create the infoWindow
-	largeInfowindow = new google.maps.InfoWindow();
-	google.maps.event.addListener(largeInfowindow,'closeclick',function(){
-   		if (largeInfowindow.marker) {
-			largeInfowindow.marker.setAnimation(null);
+	infowindow = new google.maps.InfoWindow();
+	google.maps.event.addListener(infowindow,'closeclick',function(){
+   		if (infowindow.marker) {
+			infowindow.marker.setAnimation(null);
 		}
+		infowindow.marker = null;
 	});
 
 	// create the ViewModel and get the markers
@@ -60,7 +61,7 @@ var ViewModel = function() {
 	}
 
 	self.openInfoWindow = function(item) {
-		populateInfoWindow(item, largeInfowindow);
+		populateInfoWindow(item);
 	}
 
  	self.currentFilter = ko.observable();
@@ -86,7 +87,11 @@ var ViewModel = function() {
 };
 
 /**
-* 
+* Show/Hide the maskers.
+
+* @param shown
+* @param hidden
+* @param type
 */
 function showHideMarkers(shown, hidden, type) {
 	var removed = shown.remove(function(item) {
@@ -116,8 +121,6 @@ function showHideMarkers(shown, hidden, type) {
 	}
 };
 
-
-
 /**
 */
 function getMarkers(center, type, callback) {
@@ -136,9 +139,11 @@ function getMarkers(center, type, callback) {
 
 		callback(markers)
 	});
-}
+};
 
-
+/**
+*
+*/
 function createMarkers(results, markers, type) {
 	var bounds = new google.maps.LatLngBounds();
 	var defaultIcon = makeMarkerIcon(type === 'restaurant' ? 'img/restaurant.png' : 'img/gym.png');
@@ -162,7 +167,7 @@ function createMarkers(results, markers, type) {
 		markers.push(marker);
 		// Create an onclick event to open the large infowindow at each marker.
 		marker.addListener('click', function() {
-			populateInfoWindow(this, largeInfowindow);
+			populateInfoWindow(this);
 		});
 		// Two event listeners - one for mouseover, one for mouseout,
 		// to change the colors back and forth.
@@ -177,15 +182,15 @@ function createMarkers(results, markers, type) {
 		bounds.extend(marker.position);
 	}
 	map.fitBounds(bounds);
-}
-
+};
 
 /**
 * This function populates the infowindow when the marker is clicked. We'll only allow
 * one infowindow which will open at the marker that is clicked, and populate based
 * on that markers position.
+* @param {google.maps.Marker} marker - the clicked marker.
 */
-function populateInfoWindow(marker, infowindow) {
+function populateInfoWindow(marker) {
 	if (infowindow.marker) {
 		infowindow.marker.setAnimation(null);
 	}
@@ -196,18 +201,11 @@ function populateInfoWindow(marker, infowindow) {
 		// Clear the infowindow content to give the streetview time to load.
 		infowindow.setContent('');
 		infowindow.marker = marker;
-		// Make sure the marker property is cleared if the infowindow is closed.
-		infowindow.addListener('closeclick', function() {
-			infowindow.marker = null;
-		});
+
+		// Use streetview service to get the closest streetview image within
+		// 50 meters of the markers position
 		var streetViewService = new google.maps.StreetViewService();
-		var radius = 50;
-		// In case the status is OK, which means the pano was found, compute the
-		// position of the streetview image, then calculate the heading, then get a
-		// panorama from that and set the options
-
-
-		function getStreetView(data, status) {
+		streetViewService.getPanoramaByLocation(marker.position, 50, function(data, status) {
 			if (status == google.maps.StreetViewStatus.OK) {
 				var nearStreetViewLocation = data.location.latLng;
 				var heading = google.maps.geometry.spherical.computeHeading(
@@ -226,23 +224,38 @@ function populateInfoWindow(marker, infowindow) {
 				infowindow.setContent('<div>' + marker.title + '</div>' +
 					'<div>No Street View Found</div>');
 			}
-		}
+		});
 
-
-		// Use streetview service to get the closest streetview image within
-		// 50 meters of the markers position
-		streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 		// Open the infowindow on the correct marker.
 		infowindow.open(map, marker);
+
+		focusOnMarker(marker);
 	} else {
 		infowindow.close();
 	}
 };
 
+/**
+* Move the map towards the marker.
+* @param {google.maps.Marker} marker - marker that will be focused.
+*/
+function focusOnMarker(marker) {
+	var bounds = new google.maps.LatLngBounds();
+	bounds.extend(marker.position);
+	if (bounds.getNorthEast().equals(bounds.getSouthWest())) {
+       var extendPoint1 = new google.maps.LatLng(bounds.getNorthEast().lat() + 0.001, bounds.getNorthEast().lng() + 0.001);
+       var extendPoint2 = new google.maps.LatLng(bounds.getNorthEast().lat() - 0.001, bounds.getNorthEast().lng() - 0.001);
+       bounds.extend(extendPoint1);
+       bounds.extend(extendPoint2);
+    }
+
+	map.fitBounds(bounds);
+};
 
 /**
 * The icon will be 44 px wide by 44 high, have an origin
 * of 0, 0 and be anchored at 10, 34).
+* @param {string} path - path to the file.
 */
 function makeMarkerIcon(path) {
 	var markerImage = new google.maps.MarkerImage(
@@ -253,4 +266,4 @@ function makeMarkerIcon(path) {
 		new google.maps.Size(44,44));
 
 	return markerImage;
-}
+};
